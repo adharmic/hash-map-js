@@ -1,0 +1,22 @@
+{
+  "name": "hash_map",
+  "version": "0.0.1",
+  "description": "VanillaJS Hash Map",
+  "main": "hashmap.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adharmic/hash-map-js.git"
+  },
+  "author": "Adithya Ajith",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adharmic/hash-map-js/issues"
+  },
+  "homepage": "https://github.com/adharmic/hash-map-js#readme",
+  "dependencies": {
+    "@adharmic/linked_list": "^1.0.1"
+  }
+}
