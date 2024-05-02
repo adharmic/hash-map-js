@@ -3,11 +3,12 @@ const MapNode = require('./mapnode');
 
 module.exports = class HashMap {
 
-    constructor(max_capacity = 16, load_factor = .75) {
+    constructor(max_capacity = 16, load_factor = .75, hash_function) {
         this._buckets = [];
         this._max_capacity = max_capacity;
         this._capacity = 0;
         this._load_factor = load_factor;
+        this._hash_function = hash_function;
     }
 
     get buckets() {
@@ -34,6 +35,14 @@ module.exports = class HashMap {
         this._capacity = newCapacity;
     }
 
+    get hash_function() {
+        return this._hash_function;
+    }
+
+    set hash_function(newFunc) {
+        this._hash_function = newFunc;
+    }
+
     checkIndex(index) {
         if (index < 0 || index >= this.max_capacity) {
             throw new Error("trying to access out of bound index");
@@ -42,6 +51,10 @@ module.exports = class HashMap {
 
     hash(key) {
         let hashCode = 0;
+
+        if (this.hash_function !== undefined) {
+            return this.hash_function(key) % this.max_capacity;
+        }
 
         const primeNumber = 31;
         for (let i = 0; i < key.length; i++) {
@@ -71,6 +84,42 @@ module.exports = class HashMap {
         }
         this.capacity++;
         this.checkCapacity();
+    }
+
+    get(key) {
+        let keyHash = this.hash(key);
+        let bucket = this.buckets[keyHash];
+        if (bucket === undefined) {
+            return null;
+        }
+        return bucket.traverse((node, index) => {
+            if (node.value.key == key) {
+                return node.value.value;
+            }
+            return null;
+        });
+    }
+
+    has(key) {
+        return this.get(key) !== null;
+    }
+
+    remove(key) {
+        let keyHash = this.hash(key);
+        let bucket = this.buckets[keyHash];
+        if (bucket === undefined) {
+            return false;
+        }
+        let index = bucket.traverse((node, index) => {
+            if (node.value.key == key) {
+                return index;
+            }
+            return null;
+        })
+        if (index === null) return false;
+        bucket.removeAt(index);
+        return true;
+
     }
 
     checkCapacity() {
