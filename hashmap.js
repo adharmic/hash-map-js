@@ -15,6 +15,10 @@ module.exports = class HashMap {
         return this._buckets;
     }
 
+    set buckets(newBuckets) {
+        this._buckets = newBuckets;
+    }
+
     get max_capacity() {
         return this._max_capacity;
     }
@@ -119,14 +123,53 @@ module.exports = class HashMap {
         if (index === null) return false;
         bucket.removeAt(index);
         return true;
+    }
 
+    length() {
+        return this.capacity;
+    }
+
+    clear() {
+        this.buckets = [];
+        this.capacity = 0;
+    }
+
+    entries() {
+        let entries_arr = [];
+        this.buckets.forEach(element => {
+            element.traverse((node, index) => {
+                entries_arr.push(node.value);
+                return null;
+            })
+        });
+        return entries_arr;
+    }
+
+    keys() {
+        let keys_arr = [];
+        this.entries().forEach(element => {
+            keys_arr.push(element.key);
+        });
+        return keys_arr;
+    }
+
+    values() {
+        let values_arr = [];
+        this.entries().forEach(element => {
+            values_arr.push(element.value);
+        });
+        return values_arr;
     }
 
     checkCapacity() {
         let load = this.capacity / this.max_capacity;
-        if (load > this.load_factor) {
-            // Resizing time
-
+        if (load >= this.load_factor) {
+            let entries = this.entries();
+            this.clear();
+            this.max_capacity *= 2;
+            entries.forEach((element) => {
+                this.set(element.key, element.value);
+            });
         }
     }
 
